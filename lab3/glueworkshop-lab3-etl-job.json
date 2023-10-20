@@ -66,15 +66,6 @@
 		"nbformat": 4,
 		"cells": [
 			{
-				"cell_type": "markdown",
-				"source": "#### Example: Write the data in the DynamicFrame to a location in Amazon S3 and a table for it in the AWS Glue Data Catalog\n",
-				"metadata": {
-					"editable": true,
-					"tags": [],
-					"trusted": true
-				}
-			},
-			{
 				"cell_type": "code",
 				"source": "# Adding required libraries and extra jars to the job -   # <------- PLEASE REPLACE glueworkshop-123456789012-us-east-2 BELOW!!!\n\n%extra_py_files s3://glueworkshop-123456789012-us-east-2/library/pycountry_convert.zip\n%extra_jars s3://crawler-public/json/serde/json-serde.jar\n\n# Adding required properties to the job - # <------- PLEASE REPLACE glueworkshop-123456789012-us-east-2 BELOW!!!\n\n%%configure \n{\n  \"--enable-spark-ui\": \"true\",\n  \"--spark-event-logs-path\": \"s3://glueworkshop-123456789012-us-east-2/output/lab3/sparklog/\",\n  \"max_retries\": \"0\"         \n}",
 				"metadata": {
