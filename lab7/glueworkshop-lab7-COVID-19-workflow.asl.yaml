@@ -1,0 +1,69 @@
+Comment: A description of my state machine
+StartAt: Parallel
+States:
+  Parallel:
+    Type: Parallel
+    Branches:
+      - StartAt: case data extract
+        States:
+          case data extract:
+            Type: Task
+            Resource: arn:aws:states:::glue:startJobRun.sync
+            Parameters:
+              JobName: lab8-covid-case-count-data-extract
+            Next: case data process
+          case data process:
+            Type: Task
+            Resource: arn:aws:states:::glue:startJobRun.sync
+            Parameters:
+              JobName: lab8-covid-case-count-data-process
+            Next: crawl case data
+          crawl case data:
+            Type: Task
+            End: true
+            Parameters:
+              Name: lab8-covid-case-count-processed-crawler
+            Resource: arn:aws:states:::aws-sdk:glue:startCrawler
+      - StartAt: vaccine data extract
+        States:
+          vaccine data extract:
+            Type: Task
+            Resource: arn:aws:states:::glue:startJobRun.sync
+            Parameters:
+              JobName: lab8-vaccine-count-data-extract
+            Next: vaccine data process
+          vaccine data process:
+            Type: Task
+            Resource: arn:aws:states:::glue:startJobRun.sync
+            Parameters:
+              JobName: lab8-vaccine-count-data-process
+            Next: StartCrawler
+          StartCrawler:
+            Type: Task
+            End: true
+            Parameters:
+              Name: lab8-vaccine-case-count-processed-crawler
+            Resource: arn:aws:states:::aws-sdk:glue:startCrawler
+    Next: Notify success
+    Catch:
+      - ErrorEquals:
+          - States.ALL
+        Next: Notify failure
+  Notify failure:
+    Type: Task
+    Resource: arn:aws:states:::sns:publish
+    Parameters:
+      Message.$: $
+      TopicArn: arn:aws:sns:us-east-2:123456789012:lab8-sns-failure-notification
+    Next: Fail
+  Fail:
+    Type: Fail
+  Notify success:
+    Type: Task
+    Resource: arn:aws:states:::sns:publish
+    Parameters:
+      Message.$: $
+      TopicArn: arn:aws:sns:us-east-2:123456789012:lab8-sns-success-notification
+    Next: Success
+  Success:
+    Type: Succeed

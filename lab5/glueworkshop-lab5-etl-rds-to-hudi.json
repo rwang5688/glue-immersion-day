@@ -1,0 +1,101 @@
+{
+	"jobConfig": {
+		"name": "lab5-etl-rds-to-hudi",
+		"description": "",
+		"role": "arn:aws:iam::123456789012:role/AWSGlueServiceRole-glueworkshop",
+		"command": "glueetl",
+		"version": "3.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 10,
+		"maxCapacity": 10,
+		"maxRetries": 0,
+		"timeout": 10,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "lab5-etl-rds-to-hudi.py",
+		"scriptLocation": "s3://aws-glue-assets-123456789012-us-east-2/scripts/",
+		"language": "python-3",
+		"jobParameters": [
+			{
+				"key": "--conf",
+				"value": "spark.serializer=org.apache.spark.serializer.KryoSerializer",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "VISUAL_MODE",
+		"createdOn": "2023-10-19T06:01:59.396Z",
+		"developerMode": false,
+		"connectionsList": [
+			"lab5-rds-connection",
+			"lab5-hudi-connection"
+		],
+		"temporaryDirectory": "s3://aws-glue-assets-123456789012-us-east-2/temporary/",
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": true,
+		"metrics": true,
+		"spark": true,
+		"dependentPath": "s3://glueworkshop-123456789012-us-east-2/library/lab5/spark-avro_2.12-3.1.1.jar,s3://glueworkshop-123456789012-us-east-2/library/lab5/httpclient-4.5.9.jar,s3://glueworkshop-123456789012-us-east-2/library/lab5/httpcore-4.4.11.jar,s3://glueworkshop-123456789012-us-east-2/library/lab5/calcite-core-1.16.0.jar",
+		"bookmark": "job-bookmark-enable",
+		"sparkPath": "s3://aws-glue-assets-123456789012-us-east-2/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null
+	},
+	"dag": {
+		"node-1697694701268": {
+			"nodeId": "node-1697694701268",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697694684044"
+			],
+			"name": "lab5-hudi-connector",
+			"generatedNodeName": "lab5hudiconnector_node1697694701268",
+			"classification": "DataSink",
+			"type": "Connector",
+			"streamingBatchInterval": 100,
+			"connectorName": "lab5-hudi-connector",
+			"connectionName": "lab5-hudi-connection",
+			"outputSchemas": [],
+			"connectionType": "custom.spark",
+			"additionalOptions": {
+				"hoodie.datasource.hive_sync.table": "sales_hudi",
+				"hoodie.datasource.hive_sync.partition_extractor_class": "org.apache.hudi.hive.NonPartitionedExtractor",
+				"className": "org.apache.hudi",
+				"hoodie.datasource.hive_sync.use_jdbc": "false",
+				"hoodie.datasource.write.recordkey.field": "uuid",
+				"hoodie.table.name": "sales_hudi",
+				"hoodie.consistency.check.enabled": "true",
+				"path": "s3://glueworkshop-123456789012-us-east-2-hudi/sales/",
+				"hoodie.datasource.write.keygenerator.class": "org.apache.hudi.keygen.NonpartitionedKeyGenerator",
+				"hoodie.datasource.write.hive_style_partitioning": "false",
+				"hoodie.datasource.write.precombine.field": "order_date",
+				"hoodie.bulkinsert.shuffle.parallelism": "20",
+				"hoodie.datasource.hive_sync.enable": "true",
+				"hoodie.datasource.hive_sync.database": "glueworkshop_cloudformation",
+				"hoodie.datasource.write.operation": "upsert"
+			},
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697694684044": {
+			"nodeId": "node-1697694684044",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [],
+			"name": "AWS Glue Data Catalog",
+			"generatedNodeName": "AWSGlueDataCatalog_node1697694684044",
+			"classification": "DataSource",
+			"type": "Catalog",
+			"isCatalog": true,
+			"database": "glueworkshop_cloudformation",
+			"table": "lab5_rds_glueworkshop_sales",
+			"calculatedType": "",
+			"runtimeParameters": [],
+			"codeGenVersion": 2
+		}
+	},
+	"hasBeenSaved": false
+}

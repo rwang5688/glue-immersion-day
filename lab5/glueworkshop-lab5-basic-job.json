@@ -1,0 +1,333 @@
+{
+	"jobConfig": {
+		"name": "glueworkshop-lab5-basic-job",
+		"description": "",
+		"role": "arn:aws:iam::123456789012:role/AWSGlueServiceRole-glueworkshop",
+		"command": "glueetl",
+		"version": "4.0",
+		"runtime": null,
+		"workerType": "G.1X",
+		"numberOfWorkers": 4,
+		"maxCapacity": 4,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "glueworkshop-lab5-basic-job.py",
+		"scriptLocation": "s3://aws-glue-assets-123456789012-us-east-2/scripts/",
+		"language": "python-3",
+		"jobParameters": [],
+		"tags": [],
+		"jobMode": "VISUAL_MODE",
+		"createdOn": "2023-10-18T06:59:42.646Z",
+		"developerMode": false,
+		"connectionsList": [],
+		"temporaryDirectory": "s3://aws-glue-assets-123456789012-us-east-2/temporary/",
+		"logging": true,
+		"glueHiveMetastore": true,
+		"etlAutoTuning": false,
+		"metrics": true,
+		"spark": true,
+		"bookmark": "job-bookmark-disable",
+		"sparkPath": "s3://aws-glue-assets-123456789012-us-east-2/sparkHistoryLogs/",
+		"flexExecution": false,
+		"minFlexWorkers": null
+	},
+	"dag": {
+		"node-1697613647431": {
+			"nodeId": "node-1697613647431",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697613413862"
+			],
+			"name": "Change Schema",
+			"generatedNodeName": "ChangeSchema_node1697613647431",
+			"classification": "Transform",
+			"type": "ApplyMapping",
+			"mapping": [
+				{
+					"toKey": "date",
+					"fromPath": [
+						"date"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "state",
+					"fromPath": [
+						"state"
+					],
+					"toType": "string",
+					"fromType": "string",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "deathincrease",
+					"fromPath": [
+						"deathincrease"
+					],
+					"toType": "int",
+					"fromType": "double",
+					"dropped": false,
+					"children": null
+				},
+				{
+					"toKey": "hospitalizedincrease",
+					"fromPath": [
+						"hospitalizedincrease"
+					],
+					"toType": "int",
+					"fromType": "double",
+					"dropped": false,
+					"children": null
+				}
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697613867366": {
+			"nodeId": "node-1697613867366",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [],
+			"name": "State Name",
+			"generatedNodeName": "StateName_node1697613867366",
+			"classification": "DataSource",
+			"type": "S3",
+			"isCatalog": false,
+			"format": "csv",
+			"paths": [
+				"s3://glueworkshop-123456789012-us-east-2/input/lab5/state/"
+			],
+			"compressionType": null,
+			"exclusions": [],
+			"groupFiles": null,
+			"groupSize": null,
+			"recurse": true,
+			"maxBand": null,
+			"maxFilesInBand": null,
+			"additionalOptions": {
+				"boundedSize": null,
+				"boundedFiles": null,
+				"enableSamplePath": false,
+				"samplePath": "s3://glueworkshop-123456789012-us-east-2/input/lab5/state/states.csv",
+				"boundedOption": null
+			},
+			"separator": ",",
+			"escaper": "",
+			"quoteChar": "\"",
+			"multiline": null,
+			"withHeader": true,
+			"writeHeader": null,
+			"skipFirst": null,
+			"optimizePerformance": false,
+			"outputSchemas": [
+				[
+					{
+						"key": "StateName",
+						"fullPath": [
+							"StateName"
+						],
+						"type": "string",
+						"glueStudioType": null,
+						"children": null
+					},
+					{
+						"key": "Abbrev",
+						"fullPath": [
+							"Abbrev"
+						],
+						"type": "string",
+						"glueStudioType": null,
+						"children": null
+					},
+					{
+						"key": "Code",
+						"fullPath": [
+							"Code"
+						],
+						"type": "string",
+						"glueStudioType": null,
+						"children": null
+					}
+				]
+			],
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697613413862": {
+			"nodeId": "node-1697613413862",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697612968297"
+			],
+			"name": "Filter",
+			"generatedNodeName": "Filter_node1697613413862",
+			"classification": "Transform",
+			"type": "Filter",
+			"logicalOperator": "AND",
+			"filters": [
+				{
+					"operation": "REGEX",
+					"negated": false,
+					"values": [
+						{
+							"type": "CONSTANT",
+							"value": [
+								"CA|NY"
+							]
+						},
+						{
+							"type": "COLUMNEXTRACTED",
+							"value": "state"
+						}
+					]
+				}
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697612968297": {
+			"nodeId": "node-1697612968297",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697612521554"
+			],
+			"name": "Drop Fields",
+			"generatedNodeName": "DropFields_node1697612968297",
+			"classification": "Transform",
+			"type": "DropFields",
+			"paths": [
+				"positive",
+				"hospitalized",
+				"death",
+				"total",
+				"hash",
+				"datechecked",
+				"totaltestresults",
+				"fips",
+				"negativeincrease",
+				"positiveincrease",
+				"totaltestresultsincrease",
+				"negative",
+				"pending"
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697614251426": {
+			"nodeId": "node-1697614251426",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697613647431",
+				"node-1697613867366"
+			],
+			"name": "Join",
+			"generatedNodeName": "Join_node1697614251426",
+			"classification": "Transform",
+			"type": "Join",
+			"joinType": "left",
+			"columns": [
+				{
+					"from": "node-1697613647431",
+					"keys": [
+						"state"
+					]
+				},
+				{
+					"from": "node-1697613867366",
+					"keys": [
+						"Code"
+					]
+				}
+			],
+			"columnConditions": [
+				"="
+			],
+			"parentsValid": true,
+			"calculatedType": "",
+			"codeGenVersion": 2
+		},
+		"node-1697614725981": {
+			"nodeId": "node-1697614725981",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697614251426"
+			],
+			"name": "Aggregate",
+			"generatedNodeName": "Aggregate_node1697614725981",
+			"classification": "Transform",
+			"type": "Aggregate",
+			"parentsValid": true,
+			"calculatedType": "",
+			"groups": [
+				"StateName"
+			],
+			"aggs": [
+				{
+					"column": "deathincrease",
+					"aggFunc": "sum"
+				},
+				{
+					"column": "hospitalizedincrease",
+					"aggFunc": "sum"
+				}
+			],
+			"codeGenVersion": 2
+		},
+		"node-1697615467942": {
+			"nodeId": "node-1697615467942",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [
+				"node-1697614725981"
+			],
+			"name": "Basic Output",
+			"generatedNodeName": "BasicOutput_node1697615467942",
+			"classification": "DataSink",
+			"type": "S3",
+			"streamingBatchInterval": 100,
+			"format": "json",
+			"compression": "none",
+			"path": "s3://glueworkshop-123456789012-us-east-2/output/lab5/basic/",
+			"partitionKeys": [],
+			"schemaChangePolicy": {
+				"enableUpdateCatalog": true,
+				"updateBehavior": "LOG",
+				"database": "console_glueworkshop",
+				"table": "console_basic"
+			},
+			"updateCatalogOptions": "partitions",
+			"calculatedType": ""
+		},
+		"node-1697612521554": {
+			"nodeId": "node-1697612521554",
+			"dataPreview": false,
+			"previewAmount": 0,
+			"inputs": [],
+			"name": "COVID data",
+			"generatedNodeName": "COVIDdata_node1697612521554",
+			"classification": "DataSource",
+			"type": "Catalog",
+			"isCatalog": true,
+			"database": "console_glueworkshop",
+			"table": "console_json",
+			"calculatedType": "",
+			"runtimeParameters": [],
+			"codeGenVersion": 2
+		}
+	},
+	"hasBeenSaved": false
+}

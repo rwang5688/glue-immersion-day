@@ -1,0 +1,48 @@
+{
+	"jobConfig": {
+		"name": "glueworkshop-lab5-etl-init-load-rds-job",
+		"description": "",
+		"role": "arn:aws:iam::123456789012:role/AWSGlueServiceRole-glueworkshop",
+		"command": "glueetl",
+		"version": "3.0",
+		"runtime": null,
+		"workerType": "Standard",
+		"numberOfWorkers": 4,
+		"maxCapacity": 4,
+		"maxRetries": 0,
+		"timeout": 2880,
+		"maxConcurrentRuns": 1,
+		"security": "none",
+		"scriptName": "load_rds.py",
+		"scriptLocation": "s3://glueworkshop-123456789012-us-east-2/script/lab5/",
+		"language": "python-3",
+		"jobParameters": [
+			{
+				"key": "--region_name",
+				"value": "us-east-2",
+				"existing": false
+			},
+			{
+				"key": "--s3_bucket_name",
+				"value": "glueworkshop-123456789012-us-east-2",
+				"existing": false
+			}
+		],
+		"tags": [],
+		"jobMode": "DEVELOPER_MODE",
+		"createdOn": "2023-10-19T04:49:54.321Z",
+		"developerMode": false,
+		"connectionsList": [
+			"lab5-rds-connection"
+		],
+		"temporaryDirectory": "s3://glueworkshop-123456789012-us-east-2/output/lab5/temp/",
+		"metrics": true,
+		"spark": true,
+		"sparkPath": "s3://glueworkshop-123456789012-us-east-2/output/lab5/sparklog/",
+		"etlAutoTuning": true,
+		"flexExecution": false,
+		"minFlexWorkers": null
+	},
+	"hasBeenSaved": false,
+	"script": "import sys\nfrom awsglue.transforms import *\nfrom awsglue.utils import getResolvedOptions\nfrom pyspark.context import SparkContext\nfrom awsglue.context import GlueContext\nfrom awsglue.job import Job\n\nargs = getResolvedOptions(sys.argv, ['JOB_NAME'])\n\nsc = SparkContext()\nglueContext = GlueContext(sc)\nspark = glueContext.spark_session\njob = Job(glueContext)\njob.init(args['JOB_NAME'], args)\n\ndatasource0 = glueContext.create_dynamic_frame.from_catalog(database = \"cli_glueworkshop\", table_name = \"cli_csv\", transformation_ctx = \"datasource0\")\napplymapping1 = ApplyMapping.apply(frame = datasource0, mappings = [(\"uuid\", \"long\", \"uuid\", \"long\"), (\"country\", \"string\", \"country\", \"string\"), (\"item type\", \"string\", \"item_type\", \"string\"), (\"sales channel\", \"string\", \"sales_channel\", \"string\"), (\"order priority\", \"string\", \"order_priority\", \"string\"), (\"order date\", \"string\", \"order_date\", \"string\"), (\"region\", \"string\", \"region\", \"string\"), (\"ship date\", \"string\", \"ship_date\", \"string\"), (\"units sold\", \"long\", \"units_sold\", \"long\"), (\"unit price\", \"double\", \"unit_price\", \"double\"), (\"unit cost\", \"double\", \"unit_cost\", \"double\"), (\"total revenue\", \"double\", \"total_revenue\", \"double\"), (\"total cost\", \"double\", \"total_cost\", \"double\"), (\"total profit\", \"double\", \"total_profit\", \"double\")], transformation_ctx = \"applymapping1\")\nresolvechoice2 = ResolveChoice.apply(frame = applymapping1, choice = \"make_cols\", transformation_ctx = \"resolvechoice2\")\ndropnullfields3 = DropNullFields.apply(frame = resolvechoice2, transformation_ctx = \"dropnullfields3\")\ndatasink4 = glueContext.write_dynamic_frame.from_jdbc_conf(frame = dropnullfields3, catalog_connection = \"lab5-rds-connection\", connection_options = {\"dbtable\": \"sales\", \"database\": \"glueworkshop\"}, transformation_ctx = \"datasink4\")\n\njob.commit()\n\n"
+}
